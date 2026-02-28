@@ -6,8 +6,8 @@ import streamlit as st
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 
-st.set_page_config(page_title="5G RAN AI Lab", page_icon="📡", layout="wide")
-st.title("📡 5G RAN AI Lab — xApp Conflict Detection")
+st.set_page_config(page_title="IntelliRAN", page_icon=None, layout="wide")
+st.title("IntelliRAN — xApp Conflict Detection")
 
 
 st.sidebar.header("Navigation")
