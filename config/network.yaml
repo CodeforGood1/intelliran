@@ -1,0 +1,199 @@
+# ============================================================
+# RAN AI Lab - Industry-Grade 5G NR / O-RAN Configuration
+# Aligned with 3GPP TS 38.331, O-RAN WG3 E2SM-KPM v3.0
+# ============================================================
+
+ran:
+  gnb_id: "gnb-001"
+  mcc: "001"
+  mnc: "01"
+  tac: 1
+  cells:
+    - cell_id: "cell-01"
+      pci: 100
+      band: "n78"
+      arfcn: 632628
+      bandwidth_mhz: 100
+      total_prbs: 273
+      scs_khz: 30
+      duplex: "TDD"
+      tx_power_dbm: 43
+      antenna_ports: 64
+      max_layers: 4
+      max_ue_capacity: 500
+      cu_id: "cu-001"
+      du_id: "du-001"
+      ru_id: "ru-001"
+
+    - cell_id: "cell-02"
+      pci: 101
+      band: "n78"
+      arfcn: 632628
+      bandwidth_mhz: 100
+      total_prbs: 273
+      scs_khz: 30
+      duplex: "TDD"
+      tx_power_dbm: 43
+      antenna_ports: 64
+      max_layers: 4
+      max_ue_capacity: 500
+      cu_id: "cu-001"
+      du_id: "du-002"
+      ru_id: "ru-002"
+
+    - cell_id: "cell-03"
+      pci: 102
+      band: "n257"
+      arfcn: 2054166
+      bandwidth_mhz: 400
+      total_prbs: 264
+      scs_khz: 120
+      duplex: "TDD"
+      tx_power_dbm: 35
+      antenna_ports: 256
+      max_layers: 8
+      max_ue_capacity: 200
+      cu_id: "cu-001"
+      du_id: "du-003"
+      ru_id: "ru-003"
+
+ue_profiles:
+  - name: "eMBB_premium"
+    count: 60
+    qfi: 9
+    target_dl_mbps: 100
+    target_ul_mbps: 25
+    target_latency_ms: 20
+    mobility: "pedestrian"
+    traffic_model: "full_buffer"
+
+  - name: "eMBB_standard"
+    count: 120
+    qfi: 8
+    target_dl_mbps: 30
+    target_ul_mbps: 10
+    target_latency_ms: 50
+    mobility: "vehicular"
+    traffic_model: "bursty"
+
+  - name: "URLLC"
+    count: 20
+    qfi: 82
+    target_dl_mbps: 10
+    target_ul_mbps: 10
+    target_latency_ms: 1
+    target_reliability: 0.99999
+    mobility: "stationary"
+    traffic_model: "periodic"
+
+  - name: "mMTC_IoT"
+    count: 300
+    qfi: 79
+    target_dl_mbps: 0.1
+    target_ul_mbps: 0.05
+    target_latency_ms: 1000
+    mobility: "stationary"
+    traffic_model: "sparse"
+
+ric:
+  near_rt_ric_id: "ric-001"
+  e2_report_interval_ms: 10
+  control_loop_ms: 10
+  xapps:
+    - name: "ts-xapp"
+      type: "traffic_steering"
+      actions: ["handover", "cell_reselection", "beam_switch", "carrier_aggregation"]
+      trigger: "rsrp_degradation"
+      priority: 1
+
+    - name: "qos-xapp"
+      type: "qos_optimization"
+      actions: ["mcs_override", "power_boost", "prb_reservation", "scheduling_weight"]
+      trigger: "qos_violation"
+      priority: 2
+
+    - name: "mlb-xapp"
+      type: "load_balancing"
+      actions: ["cio_adjust", "ho_threshold", "prb_cap", "sleep_mode"]
+      trigger: "load_imbalance"
+      priority: 3
+
+    - name: "es-xapp"
+      type: "energy_saving"
+      actions: ["carrier_shutdown", "mimo_layer_reduce", "dtx_drx", "sleep_mode"]
+      trigger: "low_traffic"
+      priority: 4
+
+telemetry:
+  poll_interval_ms: 10
+  kpm_report_interval_ms: 100
+  granularity: "per_cell"
+  window_size: 100
+  log_dir: "logs"
+  data_dir: "data"
+  pm_counters:
+    - "DRB.UEThpDl"
+    - "DRB.UEThpUl"
+    - "RRU.PrbUsedDl"
+    - "RRU.PrbUsedUl"
+    - "RRU.PrbAvailDl"
+    - "CARR.PDSCHMCSDist"
+    - "L1M.RS-SINR"
+    - "L1M.RSRP"
+    - "L1M.RSRQ"
+    - "DRB.RlcSduDelayDl"
+    - "DRB.PacketLossRateDl"
+    - "DRB.PacketLossRateUl"
+    - "RRC.ConnEstabSucc"
+    - "RRC.ConnEstabAtt"
+    - "HO.SuccOutInterEnb"
+    - "HO.AttOutInterEnb"
+    - "TB.TotNbrDl.Qpsk"
+    - "TB.TotNbrDl.16Qam"
+    - "TB.TotNbrDl.64Qam"
+    - "TB.TotNbrDl.256Qam"
+    - "TB.ErrTotalNbrDl"
+
+ml:
+  seed: 42
+  test_size: 0.2
+  lgbm:
+    n_estimators: 300
+    max_depth: 6
+    num_leaves: 31
+    learning_rate: 0.03
+    min_child_samples: 30
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_alpha: 0.5
+    reg_lambda: 1.0
+  mlp:
+    hidden_layers: [128, 64, 32]
+    epochs: 50
+    lr: 0.0005
+    batch_size: 256
+    dropout: 0.15
+    weight_decay: 0.0001
+  xgb:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.03
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_alpha: 0.5
+    reg_lambda: 1.0
+    tree_method: "hist"
+  inference:
+    target_latency_ms: 0.5
+    onnx_graph_optimization: "ORT_ENABLE_ALL"
+    warmup_iterations: 100
+  conflict_kpi_threshold: 0.05
+
+experiment:
+  duration_s: 120
+  warmup_s: 1
+  simulated_mode: true
+  scenario: "urban_dense"
+  ue_churn_rate: 0.02
+  fading_model: "TDL-C"
+  doppler_hz: 5
