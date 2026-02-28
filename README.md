@@ -1,5 +1,7 @@
 # IntelliRAN — 5G xApp Conflict Detection with Sub-Millisecond AI
 
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
 **Industry-oriented simulation of 5G NR / O-RAN near-RT RIC with sub-millisecond ML-based xApp conflict detection.**
 
 > A full-stack AI/ML platform that simulates how near-Real-Time RAN Intelligent Controllers (near-RT RIC) detect and handle policy conflicts between competing xApps in O-RAN 5G networks. Built on 3GPP TS 38.xxx standards, O-RAN WG3 E2SM-KPM, and WG2 AI/ML workflows.
